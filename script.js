@@ -48,7 +48,7 @@ const DIAGONAL_SPEED_FACTOR = 0.0022; // desplazamiento horizontal, similar orde
 
 // Rotación lenta de todos los ítems que caen (fruta y products1).
 const ROTATION_SPEED_MIN = 0.004; // rad por frame (a 60fps aprox.) — los más lentos, ya notorio
-const ROTATION_SPEED_MAX = 0.10;  // los más rápidos, giro bastante rápido
+const ROTATION_SPEED_MAX = 0.05;  // los más rápidos, giro bastante rápido
 
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
