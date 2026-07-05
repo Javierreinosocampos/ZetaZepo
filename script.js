@@ -26,6 +26,11 @@ const CATCHES_PER_BASKET_LEVEL = 10;
 // (el hitbox no cambia, solo el tamaño visual de la imagen).
 const BASKET_VISUAL_SCALE = 2.1;
 
+// Cuánto más grandes se dibujan (y se atrapan, ya que el radio también es su hitbox)
+// los ítems que caen: products1 y fruta.
+const ITEM_VISUAL_SCALE = 1.5;
+const BASE_ITEM_RADIUS_FACTOR = 0.045;
+
 // Nombre del bucket de Storage con el fondo de bosque (según vidas restantes: 38 -> 37 -> 36).
 const FOREST_BUCKET = 'forest';
 
@@ -609,7 +614,6 @@ canvas.addEventListener('pointerdown', (e) => {
 
 canvas.addEventListener('pointermove', (e) => {
     if (!isDragging) return;
-    if (e.pressure === 0 && e.pointerType === 'touch') return;
 
     const rect = canvas.getBoundingClientRect();
     const currentX = e.clientX - rect.left;
@@ -642,7 +646,7 @@ function spawnItemFromPool(pool) {
     if (pool.length === 0) return;
 
     const data = pool[Math.floor(Math.random() * pool.length)];
-    const radius = cssWidth * 0.045;
+    const radius = cssWidth * BASE_ITEM_RADIUS_FACTOR * ITEM_VISUAL_SCALE;
     const speedFactor = getCurrentSpeedFactor();
 
     // A partir de DIAGONAL_SCORE_THRESHOLD puntos, los ítems de "products1" (type 'good')
