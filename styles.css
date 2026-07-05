@@ -333,6 +333,28 @@ body {
     opacity: 0.55;
 }
 
+#howto-btn {
+    position: absolute;
+    right: max(16px, env(safe-area-inset-right));
+    bottom: max(16px, env(safe-area-inset-bottom));
+    width: auto;
+    padding: 10px 16px;
+    font-size: clamp(12px, 3.2vw, 14px);
+    font-weight: bold;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    touch-action: manipulation;
+    z-index: 1;
+}
+
+#howto-btn:active {
+    background: rgba(255, 255, 255, 0.22);
+    transform: scale(0.97);
+}
+
 #leaderboard-tabs { display: flex; gap: 8px; margin-bottom: 4px; }
 
 .tab-btn {
