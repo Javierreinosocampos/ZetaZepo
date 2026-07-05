@@ -28,7 +28,7 @@ const BASKET_VISUAL_SCALE = 2.1;
 
 // Cuánto más grandes se dibujan (y se atrapan, ya que el radio también es su hitbox)
 // los ítems que caen. Se separan porque products1 necesitaba crecer más que la fruta.
-const PRODUCT_VISUAL_SCALE = 10; // 1.5 (anterior) x 1.5 más, para compensar el ajuste de proporción
+const PRODUCT_VISUAL_SCALE = 3; // 1.5 (anterior) x 1.5 más, para compensar el ajuste de proporción
 const FRUIT_VISUAL_SCALE = 1.5;
 const BASE_ITEM_RADIUS_FACTOR = 0.045;
 
@@ -48,7 +48,7 @@ const DIAGONAL_SPEED_FACTOR = 0.0022; // desplazamiento horizontal, similar orde
 
 // Rotación lenta de todos los ítems que caen (fruta y products1).
 const ROTATION_SPEED_MIN = 0.004; // rad por frame (a 60fps aprox.) — los más lentos, ya notorio
-const ROTATION_SPEED_MAX = 0.30;  // los más rápidos, giro bastante rápido
+const ROTATION_SPEED_MAX = 0.10;  // los más rápidos, giro bastante rápido
 
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
