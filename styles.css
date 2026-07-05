@@ -248,6 +248,18 @@ body {
     opacity: 0.75;
 }
 
+#loading-credit {
+    position: absolute;
+    bottom: max(14px, env(safe-area-inset-bottom));
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: clamp(9px, 2.4vw, 11px);
+    opacity: 0.4;
+    padding: 0 24px;
+    letter-spacing: 0.2px;
+}
+
 #menu-screen p,
 #game-over-screen p {
     font-size: clamp(14px, 3.5vw, 16px);
