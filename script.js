@@ -159,20 +159,34 @@ function resetGameState() {
 // ==================================================================
 const DIFFICULTY = {
     baseSpawnInterval: 1100,
-    minSpawnInterval: 350,
+    // Suelo práctico de aparición: por debajo de esto el juego dejaría de ser jugable
+    // (los objetos se solaparían unos con otros), así que la frecuencia de aparición
+    // se acerca a este valor cada vez más pero de forma asintótica.
+    minSpawnInterval: 220,
+    spawnRampSeconds: 45,
+    // La velocidad de caída, en cambio, NO tiene techo: crece para siempre mientras
+    // dure la partida, cada vez más deprisa (término lineal + término cuadrático que
+    // hace que la dificultad se acelere cuanto más se sobrevive).
     baseSpeedFactor: 0.0028,
-    maxSpeedFactor: 0.009,
-    rampUpSeconds: 90
+    speedGrowthPerSecond: 0.00004,
+    speedGrowthAcceleration: 0.0000003
 };
 
 function getCurrentSpawnInterval() {
-    const progress = Math.min(elapsedSeconds / DIFFICULTY.rampUpSeconds, 1);
-    return DIFFICULTY.baseSpawnInterval - progress * (DIFFICULTY.baseSpawnInterval - DIFFICULTY.minSpawnInterval);
+    // Decaimiento exponencial hacia el suelo práctico: se acerca cada vez más
+    // rápido a intervalos mínimos sin llegar nunca a bloquear el juego.
+    const decay = Math.exp(-elapsedSeconds / DIFFICULTY.spawnRampSeconds);
+    return DIFFICULTY.minSpawnInterval + (DIFFICULTY.baseSpawnInterval - DIFFICULTY.minSpawnInterval) * decay;
 }
 
 function getCurrentSpeedFactor() {
-    const progress = Math.min(elapsedSeconds / DIFFICULTY.rampUpSeconds, 1);
-    return DIFFICULTY.baseSpeedFactor + progress * (DIFFICULTY.maxSpeedFactor - DIFFICULTY.baseSpeedFactor);
+    // Crecimiento infinito y sin techo: cuanto más dura la partida, no solo caen
+    // más rápido los objetos, sino que la propia velocidad a la que aumenta la
+    // dificultad también aumenta (término cuadrático en el tiempo).
+    const t = elapsedSeconds;
+    return DIFFICULTY.baseSpeedFactor
+        + DIFFICULTY.speedGrowthPerSecond * t
+        + DIFFICULTY.speedGrowthAcceleration * t * t;
 }
 
 // ==================================================================
