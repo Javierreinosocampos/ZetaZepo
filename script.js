@@ -22,6 +22,9 @@ const BASKET_BUCKET = 'lungs';
 const BASKET_MIN_NUMBER = 29;
 const BASKET_MAX_NUMBER = 34;
 const CATCHES_PER_BASKET_LEVEL = 10;
+// Cuánto más grande se dibuja la imagen del pulmón respecto a su área de colisión real
+// (el hitbox no cambia, solo el tamaño visual de la imagen).
+const BASKET_VISUAL_SCALE = 2.1;
 
 // Nombre del bucket de Storage con el fondo de bosque (según vidas restantes: 38 -> 37 -> 36).
 const FOREST_BUCKET = 'forest';
@@ -534,7 +537,7 @@ async function updateTotalGamesPlayed() {
     if (!totalGamesEl) return;
     const count = await fetchTotalGamesPlayed();
     if (count !== null) {
-        totalGamesEl.textContent = `Total de pulmones destruidos: ${count}`;
+        totalGamesEl.textContent = `Partidas jugadas: ${count}`;
     }
 }
 
@@ -590,22 +593,37 @@ async function renderLeaderboard(scope) {
 // ==================================================================
 // CONTROLES DE LA CANASTA
 // ==================================================================
+// Deslizar para mover: tocar y no mover el dedo no desplaza el pulmón; solo se
+// mueve la cantidad exacta que deslizas el dedo (arrastre relativo, no salto al tocar).
+let isDragging = false;
+let dragStartX = 0;
+let basketStartX = 0;
+
 canvas.addEventListener('pointerdown', (e) => {
     canvas.setPointerCapture(e.pointerId);
-    moveBasketTo(e);
+    const rect = canvas.getBoundingClientRect();
+    isDragging = true;
+    dragStartX = e.clientX - rect.left;
+    basketStartX = basket.x;
 });
 
 canvas.addEventListener('pointermove', (e) => {
+    if (!isDragging) return;
     if (e.pressure === 0 && e.pointerType === 'touch') return;
-    moveBasketTo(e);
+
+    const rect = canvas.getBoundingClientRect();
+    const currentX = e.clientX - rect.left;
+    basket.x = basketStartX + (currentX - dragStartX);
+    clampBasket();
 });
 
-function moveBasketTo(e) {
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    basket.x = x - basket.width / 2;
-    clampBasket();
+function stopDragging() {
+    isDragging = false;
 }
+
+canvas.addEventListener('pointerup', stopDragging);
+canvas.addEventListener('pointercancel', stopDragging);
+canvas.addEventListener('pointerleave', stopDragging);
 
 let keys = { left: false, right: false };
 document.addEventListener('keydown', (e) => {
@@ -662,20 +680,34 @@ function spawnFruitItem() {
     spawnItemFromPool(fruitPool);
 }
 
+// Rectángulo de dibujo del pulmón: más grande que el hitbox real, pero anclado
+// al mismo centro horizontal y a la misma base, para que la colisión no cambie.
+function getBasketDrawRect() {
+    const drawWidth = basket.width * BASKET_VISUAL_SCALE;
+    const drawHeight = basket.height * BASKET_VISUAL_SCALE;
+    return {
+        x: basket.x + basket.width / 2 - drawWidth / 2,
+        y: basket.y + basket.height - drawHeight,
+        width: drawWidth,
+        height: drawHeight
+    };
+}
+
 function drawBasket() {
     const basketImage = getCurrentBasketImage();
+    const rect = getBasketDrawRect();
 
     if (basketImage) {
-        ctx.drawImage(basketImage, basket.x, basket.y, basket.width, basket.height);
+        ctx.drawImage(basketImage, rect.x, rect.y, rect.width, rect.height);
         return;
     }
 
     // Respaldo: cesta dibujada si las imágenes de Storage no cargaron.
     ctx.fillStyle = '#8b5a2b';
-    ctx.fillRect(basket.x, basket.y, basket.width, basket.height);
+    ctx.fillRect(rect.x, rect.y, rect.width, rect.height);
     ctx.strokeStyle = '#5c3a1a';
     ctx.lineWidth = 3;
-    ctx.strokeRect(basket.x, basket.y, basket.width, basket.height);
+    ctx.strokeRect(rect.x, rect.y, rect.width, rect.height);
 }
 
 function drawItems() {
