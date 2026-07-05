@@ -1,0 +1,311 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+    height: 100%;
+    overscroll-behavior: none;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100dvh;
+    width: 100vw;
+    background: #222;
+    font-family: Arial, Helvetica, sans-serif;
+    overflow: hidden;
+    touch-action: none;
+    user-select: none;
+}
+
+#game-container {
+    position: relative;
+    height: 100dvh;
+    width: calc(100dvh * 3 / 4);
+    max-width: 100vw;
+    background: linear-gradient(#87ceeb, #ffffff);
+    overflow: hidden;
+}
+
+@media (min-width: 700px) {
+    #game-container {
+        height: min(100dvh - 40px, 800px);
+        width: min(100vw - 40px, 600px);
+        border: 4px solid #333;
+        border-radius: 16px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    }
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ---------- SPLASH ---------- */
+#splash-screen {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    background: #111;
+    z-index: 20;
+    cursor: pointer;
+    transition: opacity 0.4s ease;
+}
+
+#splash-screen.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#splash-image {
+    width: min(55%, 220px);
+    height: auto;
+    display: block;
+}
+
+#splash-fallback {
+    width: min(55%, 220px);
+    aspect-ratio: 1 / 1;
+    border-radius: 24px;
+    background: #333;
+    border: 2px solid #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 16px;
+}
+
+#splash-fallback span {
+    color: #fff;
+    font-weight: bold;
+    font-size: clamp(16px, 5vw, 22px);
+}
+
+#splash-hint {
+    color: #ccc;
+    font-size: clamp(13px, 3.5vw, 15px);
+    animation: pulse 1.6s infinite ease-in-out;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+/* ---------- PANTALLAS COMUNES (menú, récords, carga, game over) ---------- */
+#loading-screen,
+#menu-screen,
+#leaderboard-screen,
+#game-over-screen {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    background: rgba(15, 20, 30, 0.92);
+    color: #fff;
+    text-align: center;
+    padding: 24px;
+    z-index: 15;
+}
+
+#menu-screen h1,
+#leaderboard-screen h1,
+#game-over-screen h1 {
+    font-size: clamp(22px, 6vw, 30px);
+    margin-bottom: 6px;
+}
+
+#menu-screen p,
+#game-over-screen p {
+    font-size: clamp(14px, 3.5vw, 16px);
+    opacity: 0.85;
+    max-width: 260px;
+}
+
+/* ---------- CAMPO DE NOMBRE ---------- */
+#name-field {
+    width: min(280px, 80%);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+#name-field label {
+    font-size: clamp(12px, 3.2vw, 14px);
+    opacity: 0.75;
+    text-align: left;
+}
+
+#player-name {
+    padding: 12px 14px;
+    font-size: clamp(15px, 4vw, 17px);
+    border-radius: 10px;
+    border: 2px solid #555;
+    background: #fff;
+    color: #222;
+    outline: none;
+}
+
+#player-name:focus {
+    border-color: #ffcc00;
+}
+
+#name-error {
+    color: #ff6b6b;
+    font-size: clamp(12px, 3.2vw, 13px);
+    text-align: left;
+}
+
+/* ---------- BOTONES ---------- */
+.primary-btn,
+.secondary-btn {
+    width: min(260px, 80%);
+    padding: 14px 24px;
+    font-size: clamp(16px, 4vw, 18px);
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    touch-action: manipulation;
+    border: none;
+}
+
+.primary-btn {
+    background: #ffcc00;
+    color: #222;
+}
+
+.primary-btn:active {
+    background: #e6b800;
+    transform: scale(0.97);
+}
+
+.secondary-btn {
+    background: transparent;
+    color: #fff;
+    border: 2px solid rgba(255,255,255,0.5);
+}
+
+.secondary-btn:active {
+    background: rgba(255,255,255,0.12);
+    transform: scale(0.97);
+}
+
+/* ---------- RÉCORDS ---------- */
+#leaderboard-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.tab-btn {
+    padding: 8px 20px;
+    border-radius: 20px;
+    border: 2px solid rgba(255,255,255,0.4);
+    background: transparent;
+    color: #fff;
+    font-size: clamp(13px, 3.5vw, 15px);
+    cursor: pointer;
+}
+
+.tab-btn.active {
+    background: #ffcc00;
+    color: #222;
+    border-color: #ffcc00;
+}
+
+#leaderboard-table-wrapper {
+    width: min(320px, 88%);
+    max-height: 45vh;
+    overflow-y: auto;
+    background: rgba(255,255,255,0.06);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.15);
+}
+
+#leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: clamp(12px, 3.2vw, 14px);
+}
+
+#leaderboard-table th,
+#leaderboard-table td {
+    padding: 8px 10px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+#leaderboard-table th {
+    position: sticky;
+    top: 0;
+    background: #1c2333;
+    opacity: 0.95;
+}
+
+#leaderboard-table td:first-child,
+#leaderboard-table th:first-child {
+    width: 30px;
+    text-align: center;
+}
+
+#leaderboard-table tbody tr:nth-child(odd) {
+    background: rgba(255,255,255,0.04);
+}
+
+#leaderboard-table tbody tr:first-child td {
+    color: #ffcc00;
+    font-weight: bold;
+}
+
+#leaderboard-empty {
+    padding: 20px 10px;
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+/* ---------- HUD / CANVAS ---------- */
+#hud {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding: max(10px, env(safe-area-inset-top)) 14px 10px;
+    color: #fff;
+    font-size: clamp(12px, 3.6vw, 18px);
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+    z-index: 2;
+    pointer-events: none;
+}
+
+#gameCanvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+    cursor: pointer;
+}
+
+/* ---------- GAME OVER ---------- */
+#new-record-badge {
+    color: #ffcc00;
+    font-weight: bold;
+    font-size: clamp(15px, 4vw, 17px);
+}

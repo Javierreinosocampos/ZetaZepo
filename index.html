@@ -1,17 +1,71 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prueba</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Atrapa la Fruta</title>
 
-    <!-- Archivo CSS -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Hello, World!</h1>
 
-    <!-- Archivo JavaScript -->
-    <script src="script.js"></script>
-</body>
-</html>
+    <div id="game-container">
+
+        <!-- SPLASH -->
+        <div id="splash-screen">
+            <img id="splash-image" src="assets/splash-logo.png" alt="Logo del juego">
+            <div id="splash-fallback" class="hidden">
+                <span>ATRAPA LA FRUTA</span>
+            </div>
+            <p id="splash-hint">Toca para continuar</p>
+        </div>
+
+        <!-- CARGA (solo si el pool de ítems tarda) -->
+        <div id="loading-screen" class="hidden">
+            <p>Cargando...</p>
+        </div>
+
+        <!-- MENÚ PRINCIPAL -->
+        <div id="menu-screen" class="hidden">
+            <h1>Atrapa la Fruta</h1>
+
+            <div id="name-field">
+                <label for="player-name">Tu nombre</label>
+                <input type="text" id="player-name" maxlength="16" placeholder="Ej: Javi" autocomplete="off">
+                <p id="name-error" class="hidden">Escribe un nombre para jugar</p>
+            </div>
+
+            <button id="play-btn" class="primary-btn">Jugar</button>
+            <button id="records-btn" class="secondary-btn">Ver récords</button>
+        </div>
+
+        <!-- RÉCORDS -->
+        <div id="leaderboard-screen" class="hidden">
+            <h1>Récords</h1>
+
+            <div id="leaderboard-tabs">
+                <button class="tab-btn active" data-tab="today">Hoy</button>
+                <button class="tab-btn" data-tab="alltime">Siempre</button>
+            </div>
+
+            <div id="leaderboard-table-wrapper">
+                <table id="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nombre</th>
+                            <th>Puntos</th>
+                            <th>Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-body"></tbody>
+                </table>
+                <p id="leaderboard-empty" class="hidden">Todavía no hay puntuaciones.</p>
+            </div>
+
+            <button id="leaderboard-back-btn" class="secondary-btn">Volver</button>
+        </div>
+
+        <!-- HUD -->
+        <div id="hud">
+            <span id="score">Puntos: 0</span>
