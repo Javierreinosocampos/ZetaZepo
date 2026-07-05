@@ -28,7 +28,7 @@ const BASKET_VISUAL_SCALE = 2.1;
 
 // Cuánto más grandes se dibujan (y se atrapan, ya que el radio también es su hitbox)
 // los ítems que caen. Se separan porque products1 necesitaba crecer más que la fruta.
-const PRODUCT_VISUAL_SCALE = 2.25; // 1.5 (anterior) x 1.5 más, para compensar el ajuste de proporción
+const PRODUCT_VISUAL_SCALE = 4; // 1.5 (anterior) x 1.5 más, para compensar el ajuste de proporción
 const FRUIT_VISUAL_SCALE = 1.5;
 const BASE_ITEM_RADIUS_FACTOR = 0.045;
 
