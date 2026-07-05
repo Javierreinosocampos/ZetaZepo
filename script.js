@@ -70,6 +70,12 @@ const playerNameInput = document.getElementById('player-name');
 const nameError = document.getElementById('name-error');
 const playBtn = document.getElementById('play-btn');
 const recordsBtn = document.getElementById('records-btn');
+const howtoBtn = document.getElementById('howto-btn');
+
+const howtoScreen = document.getElementById('howto-screen');
+const howtoBackBtn = document.getElementById('howto-back-btn');
+const howtoProductsGallery = document.getElementById('howto-products-gallery');
+const howtoFruitGallery = document.getElementById('howto-fruit-gallery');
 
 const leaderboardScreen = document.getElementById('leaderboard-screen');
 const leaderboardBody = document.getElementById('leaderboard-body');
@@ -897,7 +903,7 @@ function gameLoop(timestamp) {
 // NAVEGACIÓN ENTRE PANTALLAS
 // ==================================================================
 function showScreen(target) {
-    [loadingScreen, menuScreen, leaderboardScreen, gameOverScreen].forEach(screen => {
+    [loadingScreen, menuScreen, leaderboardScreen, gameOverScreen, howtoScreen].forEach(screen => {
         if (screen === target) screen.classList.remove('hidden');
         else screen.classList.add('hidden');
     });
@@ -936,6 +942,40 @@ recordsBtn.addEventListener('click', () => {
 });
 
 leaderboardBackBtn.addEventListener('click', goToMenu);
+
+// ==================================================================
+// MENÚ: cómo jugar
+// ==================================================================
+// Muestra hasta `max` imágenes distintas de un pool (productos o fruta) en la
+// galería indicada. Se usan las imágenes ya precargadas en imageCache, así que
+// no se piden de nuevo a Supabase.
+function renderHowToGallery(container, pool, altText, max = 4) {
+    container.innerHTML = '';
+
+    const withImage = pool.filter(item => item.imageUrl && imageCache[item.imageUrl]);
+    if (withImage.length === 0) return;
+
+    // Muestras distintas y en orden aleatorio, para que cada visita se vea variado.
+    const shuffled = [...withImage].sort(() => Math.random() - 0.5);
+    shuffled.slice(0, max).forEach(item => {
+        const img = document.createElement('img');
+        img.src = item.imageUrl;
+        img.alt = altText;
+        container.appendChild(img);
+    });
+}
+
+function renderHowToGalleries() {
+    renderHowToGallery(howtoProductsGallery, itemPool, 'Producto de tabaco/nicotina');
+    renderHowToGallery(howtoFruitGallery, fruitPool, 'Fruta');
+}
+
+howtoBtn.addEventListener('click', () => {
+    renderHowToGalleries();
+    showScreen(howtoScreen);
+});
+
+howtoBackBtn.addEventListener('click', goToMenu);
 
 tabButtons.forEach(btn => {
     btn.addEventListener('click', () => {
