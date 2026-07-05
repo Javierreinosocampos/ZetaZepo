@@ -27,8 +27,9 @@ const CATCHES_PER_BASKET_LEVEL = 10;
 const BASKET_VISUAL_SCALE = 2.1;
 
 // Cuánto más grandes se dibujan (y se atrapan, ya que el radio también es su hitbox)
-// los ítems que caen: products1 y fruta.
-const ITEM_VISUAL_SCALE = 1.5;
+// los ítems que caen. Se separan porque products1 necesitaba crecer más que la fruta.
+const PRODUCT_VISUAL_SCALE = 2.25; // 1.5 (anterior) x 1.5 más, para compensar el ajuste de proporción
+const FRUIT_VISUAL_SCALE = 1.5;
 const BASE_ITEM_RADIUS_FACTOR = 0.045;
 
 // Nombre del bucket de Storage con el fondo de bosque (según vidas restantes: 38 -> 37 -> 36).
@@ -46,8 +47,8 @@ const DIAGONAL_SCORE_THRESHOLD = 2000;
 const DIAGONAL_SPEED_FACTOR = 0.0022; // desplazamiento horizontal, similar orden que la caída
 
 // Rotación lenta de todos los ítems que caen (fruta y products1).
-const ROTATION_SPEED_MIN = 0.00012; // rad por frame (a 60fps aprox.) — los más lentos
-const ROTATION_SPEED_MAX = 0.0032;  // los más rápidos
+const ROTATION_SPEED_MIN = 0.004; // rad por frame (a 60fps aprox.) — los más lentos, ya notorio
+const ROTATION_SPEED_MAX = 0.05;  // los más rápidos, giro bastante rápido
 
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -646,7 +647,8 @@ function spawnItemFromPool(pool) {
     if (pool.length === 0) return;
 
     const data = pool[Math.floor(Math.random() * pool.length)];
-    const radius = cssWidth * BASE_ITEM_RADIUS_FACTOR * ITEM_VISUAL_SCALE;
+    const scale = data.type === 'fruit' ? FRUIT_VISUAL_SCALE : PRODUCT_VISUAL_SCALE;
+    const radius = cssWidth * BASE_ITEM_RADIUS_FACTOR * scale;
     const speedFactor = getCurrentSpeedFactor();
 
     // A partir de DIAGONAL_SCORE_THRESHOLD puntos, los ítems de "products1" (type 'good')
@@ -657,7 +659,7 @@ function spawnItemFromPool(pool) {
         vx = direction * cssWidth * DIAGONAL_SPEED_FACTOR * (0.7 + Math.random() * 0.6);
     }
 
-    // Todos los ítems (fruta y products1) giran muy lentamente mientras caen.
+    // Todos los ítems (fruta y products1) giran, con velocidades bien distintas entre sí.
     const rotationDirection = Math.random() < 0.5 ? -1 : 1;
     const rotationSpeed = rotationDirection * (ROTATION_SPEED_MIN + Math.random() * (ROTATION_SPEED_MAX - ROTATION_SPEED_MIN));
 
