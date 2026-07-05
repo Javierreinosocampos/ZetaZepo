@@ -3,40 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Atrapa la Fruta</title>
-
+    <title>Destruye tu pulmón</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
     <div id="game-container">
 
-        <!-- SPLASH -->
-        <div id="splash-screen">
-            <img id="splash-image" src="assets/splash-logo.png" alt="Logo del juego">
-            <div id="splash-fallback" class="hidden">
-                <span>ATRAPA LA FRUTA</span>
+        <!-- CARGA -->
+        <div id="loading-screen">
+            <div id="loading-spinner">
+                <span id="loading-spinner-icon">🚭</span>
             </div>
-            <p id="splash-hint">Toca para continuar</p>
-        </div>
-
-        <!-- CARGA (solo si el pool de ítems tarda) -->
-        <div id="loading-screen" class="hidden">
-            <p>Cargando...</p>
+            <p id="loading-text">Cargando...</p>
+            <div id="loading-progress-track">
+                <div id="loading-progress-fill"></div>
+            </div>
+            <p id="loading-progress-label">0%</p>
         </div>
 
         <!-- MENÚ PRINCIPAL -->
         <div id="menu-screen" class="hidden">
-            <h1>Atrapa la Fruta</h1>
+            <h1>Destruye tu pulmón</h1>
 
             <div id="name-field">
                 <label for="player-name">Tu nombre</label>
-                <input type="text" id="player-name" maxlength="16" placeholder="Ej: Javi" autocomplete="off">
+                <input type="text" id="player-name" maxlength="16" placeholder="Tu nombre" autocomplete="off">
                 <p id="name-error" class="hidden">Escribe un nombre para jugar</p>
             </div>
 
-            <button id="play-btn" class="primary-btn">Jugar</button>
-            <button id="records-btn" class="secondary-btn">Ver récords</button>
+            <button id="play-btn" class="primary-btn" type="button">Jugar</button>
+            <button id="records-btn" class="secondary-btn" type="button">Ver récords</button>
+
+            <p id="total-games-played">Total de pulmones destruidos: —</p>
         </div>
 
         <!-- RÉCORDS -->
@@ -44,28 +43,44 @@
             <h1>Récords</h1>
 
             <div id="leaderboard-tabs">
-                <button class="tab-btn active" data-tab="today">Hoy</button>
-                <button class="tab-btn" data-tab="alltime">Siempre</button>
+                <button class="tab-btn active" data-tab="today" type="button">Hoy</button>
+                <button class="tab-btn" data-tab="alltime" type="button">Siempre</button>
             </div>
 
             <div id="leaderboard-table-wrapper">
                 <table id="leaderboard-table">
                     <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Nombre</th>
-                            <th>Puntos</th>
-                            <th>Fecha</th>
-                        </tr>
+                        <tr><th>#</th><th>Nombre</th><th>Puntos</th><th>Fecha</th></tr>
                     </thead>
                     <tbody id="leaderboard-body"></tbody>
                 </table>
                 <p id="leaderboard-empty" class="hidden">Todavía no hay puntuaciones.</p>
             </div>
 
-            <button id="leaderboard-back-btn" class="secondary-btn">Volver</button>
+            <button id="leaderboard-back-btn" class="secondary-btn" type="button">Volver</button>
         </div>
 
         <!-- HUD -->
         <div id="hud">
             <span id="score">Puntos: 0</span>
+            <span id="best-score">Récord: 0</span>
+            <span id="lives">Vidas: 3</span>
+        </div>
+
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- GAME OVER -->
+        <div id="game-over-screen" class="hidden">
+            <h1>¡Juego terminado!</h1>
+            <p id="final-score">Puntuación: 0</p>
+            <p id="best-score-final">Récord: 0</p>
+            <p id="new-record-badge" class="hidden">¡Nuevo récord!</p>
+            <button id="restart-btn" class="primary-btn" type="button">Reintentar</button>
+            <button id="menu-btn" class="secondary-btn" type="button">Menú principal</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+</body>
+</html>

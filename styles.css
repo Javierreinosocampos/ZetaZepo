@@ -19,7 +19,6 @@ body {
     background: #222;
     font-family: Arial, Helvetica, sans-serif;
     overflow: hidden;
-    touch-action: none;
     user-select: none;
 }
 
@@ -42,67 +41,9 @@ body {
     }
 }
 
-.hidden {
-    display: none !important;
-}
+.hidden { display: none !important; }
 
-/* ---------- SPLASH ---------- */
-#splash-screen {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    background: #111;
-    z-index: 20;
-    cursor: pointer;
-    transition: opacity 0.4s ease;
-}
-
-#splash-screen.fade-out {
-    opacity: 0;
-    pointer-events: none;
-}
-
-#splash-image {
-    width: min(55%, 220px);
-    height: auto;
-    display: block;
-}
-
-#splash-fallback {
-    width: min(55%, 220px);
-    aspect-ratio: 1 / 1;
-    border-radius: 24px;
-    background: #333;
-    border: 2px solid #555;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 16px;
-}
-
-#splash-fallback span {
-    color: #fff;
-    font-weight: bold;
-    font-size: clamp(16px, 5vw, 22px);
-}
-
-#splash-hint {
-    color: #ccc;
-    font-size: clamp(13px, 3.5vw, 15px);
-    animation: pulse 1.6s infinite ease-in-out;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 1; }
-}
-
-/* ---------- PANTALLAS COMUNES (menú, récords, carga, game over) ---------- */
+/* ================= PANTALLAS COMUNES ================= */
 #loading-screen,
 #menu-screen,
 #leaderboard-screen,
@@ -114,7 +55,7 @@ body {
     justify-content: center;
     align-items: center;
     gap: 14px;
-    background: rgba(15, 20, 30, 0.92);
+    background: rgba(15, 20, 30, 0.94);
     color: #fff;
     text-align: center;
     padding: 24px;
@@ -128,6 +69,60 @@ body {
     margin-bottom: 6px;
 }
 
+/* ================= PANTALLA DE CARGA ================= */
+#loading-spinner {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    border: 6px solid rgba(255, 255, 255, 0.18);
+    border-top-color: #ffcc00;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: loading-spin 1s linear infinite;
+}
+
+#loading-spinner-icon {
+    display: inline-block;
+    font-size: 28px;
+    line-height: 1;
+    animation: loading-spin-reverse 2.4s linear infinite;
+}
+
+@keyframes loading-spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes loading-spin-reverse {
+    to { transform: rotate(-360deg); }
+}
+
+#loading-text {
+    font-size: clamp(14px, 3.5vw, 16px);
+    opacity: 0.9;
+}
+
+#loading-progress-track {
+    width: min(200px, 70%);
+    height: 8px;
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+#loading-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #ffcc00, #ff3b30);
+    border-radius: 6px;
+    transition: width 0.3s ease;
+}
+
+#loading-progress-label {
+    font-size: 13px;
+    opacity: 0.75;
+}
+
 #menu-screen p,
 #game-over-screen p {
     font-size: clamp(14px, 3.5vw, 16px);
@@ -135,7 +130,6 @@ body {
     max-width: 260px;
 }
 
-/* ---------- CAMPO DE NOMBRE ---------- */
 #name-field {
     width: min(280px, 80%);
     display: flex;
@@ -160,9 +154,7 @@ body {
     outline: none;
 }
 
-#player-name:focus {
-    border-color: #ffcc00;
-}
+#player-name:focus { border-color: #ffcc00; }
 
 #name-error {
     color: #ff6b6b;
@@ -170,7 +162,6 @@ body {
     text-align: left;
 }
 
-/* ---------- BOTONES ---------- */
 .primary-btn,
 .secondary-btn {
     width: min(260px, 80%);
@@ -183,33 +174,27 @@ body {
     border: none;
 }
 
-.primary-btn {
-    background: #ffcc00;
-    color: #222;
-}
-
-.primary-btn:active {
-    background: #e6b800;
-    transform: scale(0.97);
-}
+.primary-btn { background: #ffcc00; color: #222; }
+.primary-btn:active { background: #e6b800; transform: scale(0.97); }
 
 .secondary-btn {
     background: transparent;
     color: #fff;
     border: 2px solid rgba(255,255,255,0.5);
 }
+.secondary-btn:active { background: rgba(255,255,255,0.12); transform: scale(0.97); }
 
-.secondary-btn:active {
-    background: rgba(255,255,255,0.12);
-    transform: scale(0.97);
+#total-games-played {
+    position: absolute;
+    bottom: max(16px, env(safe-area-inset-bottom));
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: clamp(11px, 3vw, 13px);
+    opacity: 0.55;
 }
 
-/* ---------- RÉCORDS ---------- */
-#leaderboard-tabs {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 4px;
-}
+#leaderboard-tabs { display: flex; gap: 8px; margin-bottom: 4px; }
 
 .tab-btn {
     padding: 8px 20px;
@@ -221,16 +206,14 @@ body {
     cursor: pointer;
 }
 
-.tab-btn.active {
-    background: #ffcc00;
-    color: #222;
-    border-color: #ffcc00;
-}
+.tab-btn.active { background: #ffcc00; color: #222; border-color: #ffcc00; }
 
 #leaderboard-table-wrapper {
     width: min(320px, 88%);
-    max-height: 45vh;
+    max-height: 42vh;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
     background: rgba(255,255,255,0.06);
     border-radius: 12px;
     border: 1px solid rgba(255,255,255,0.15);
@@ -253,7 +236,6 @@ body {
     position: sticky;
     top: 0;
     background: #1c2333;
-    opacity: 0.95;
 }
 
 #leaderboard-table td:first-child,
@@ -262,27 +244,14 @@ body {
     text-align: center;
 }
 
-#leaderboard-table tbody tr:nth-child(odd) {
-    background: rgba(255,255,255,0.04);
-}
+#leaderboard-table tbody tr:nth-child(odd) { background: rgba(255,255,255,0.04); }
+#leaderboard-table tbody tr:first-child td { color: #ffcc00; font-weight: bold; }
 
-#leaderboard-table tbody tr:first-child td {
-    color: #ffcc00;
-    font-weight: bold;
-}
+#leaderboard-empty { padding: 20px 10px; font-size: 14px; opacity: 0.7; }
 
-#leaderboard-empty {
-    padding: 20px 10px;
-    font-size: 14px;
-    opacity: 0.7;
-}
-
-/* ---------- HUD / CANVAS ---------- */
 #hud {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
+    top: 0; left: 0; right: 0;
     display: flex;
     justify-content: space-between;
     gap: 8px;
@@ -303,7 +272,6 @@ body {
     cursor: pointer;
 }
 
-/* ---------- GAME OVER ---------- */
 #new-record-badge {
     color: #ffcc00;
     font-weight: bold;
