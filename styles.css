@@ -409,6 +409,10 @@ body {
     line-height: 1.4;
 }
 
+#howto-content strong {
+    color: #ffcc00;
+}
+
 .howto-gallery {
     display: flex;
     gap: 8px;
