@@ -46,8 +46,8 @@ const DIAGONAL_SCORE_THRESHOLD = 2000;
 const DIAGONAL_SPEED_FACTOR = 0.0022; // desplazamiento horizontal, similar orden que la caída
 
 // Rotación lenta de todos los ítems que caen (fruta y products1).
-const ROTATION_SPEED_MIN = 0.00035; // rad por frame (a 60fps aprox.)
-const ROTATION_SPEED_MAX = 0.0009;
+const ROTATION_SPEED_MIN = 0.00012; // rad por frame (a 60fps aprox.) — los más lentos
+const ROTATION_SPEED_MAX = 0.0032;  // los más rápidos
 
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -718,10 +718,24 @@ function drawItems() {
     items.forEach(item => {
         if (item.image) {
             const size = item.radius * 2;
+            const naturalWidth = item.image.naturalWidth || item.image.width || 1;
+            const naturalHeight = item.image.naturalHeight || item.image.height || 1;
+            const aspectRatio = naturalWidth / naturalHeight;
+
+            // Ajuste "contain": el lado más largo ocupa `size`, el otro se calcula
+            // según la proporción real de la imagen, para que no se deforme.
+            let drawWidth = size;
+            let drawHeight = size;
+            if (aspectRatio > 1) {
+                drawHeight = size / aspectRatio;
+            } else if (aspectRatio < 1) {
+                drawWidth = size * aspectRatio;
+            }
+
             ctx.save();
             ctx.translate(item.x, item.y);
             ctx.rotate(item.rotation);
-            ctx.drawImage(item.image, -item.radius, -item.radius, size, size);
+            ctx.drawImage(item.image, -drawWidth / 2, -drawHeight / 2, drawWidth, drawHeight);
             ctx.restore();
         } else {
             ctx.beginPath();
