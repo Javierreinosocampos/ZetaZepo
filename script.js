@@ -278,11 +278,17 @@ async function loadItemPoolFromStorage() {
 
 async function loadItemPool() {
     await loadItemPoolFromStorage();
-    const promises = itemPool.filter(i => i.imageUrl).map(i => preloadImage(i.imageUrl));
-    await Promise.all(promises);
 
-    const loadedCount = itemPool.filter(i => i.imageUrl && imageCache[i.imageUrl]).length;
-    console.log(`[Storage] Imágenes precargadas correctamente: ${loadedCount} de ${itemPool.length}.`);
+    // YA NO se espera a que las imágenes terminen de descargarse: eso es lo que
+    // hacía lenta la primera carga. Ahora solo esperamos el listado (rápido,
+    // son unos KB de JSON) y las imágenes se piden todas en paralelo en segundo
+    // plano; mientras llegan, los ítems se dibujan con el círculo de color de
+    // respaldo (ya soportado por drawItems) y van "apareciendo" solas.
+    const promises = itemPool.filter(i => i.imageUrl).map(i => preloadImage(i.imageUrl));
+    Promise.all(promises).then(() => {
+        const loadedCount = itemPool.filter(i => i.imageUrl && imageCache[i.imageUrl]).length;
+        console.log(`[Storage] Imágenes precargadas correctamente: ${loadedCount} de ${itemPool.length}.`);
+    });
 }
 
 // ==================================================================
@@ -331,11 +337,13 @@ async function loadFruitPoolFromStorage() {
 
 async function loadFruitPool() {
     await loadFruitPoolFromStorage();
-    const promises = fruitPool.filter(i => i.imageUrl).map(i => preloadImage(i.imageUrl));
-    await Promise.all(promises);
 
-    const loadedCount = fruitPool.filter(i => i.imageUrl && imageCache[i.imageUrl]).length;
-    console.log(`[Storage] Imágenes de fruta precargadas correctamente: ${loadedCount} de ${fruitPool.length}.`);
+    // Igual que con itemPool: no bloquea, se precarga en segundo plano.
+    const promises = fruitPool.filter(i => i.imageUrl).map(i => preloadImage(i.imageUrl));
+    Promise.all(promises).then(() => {
+        const loadedCount = fruitPool.filter(i => i.imageUrl && imageCache[i.imageUrl]).length;
+        console.log(`[Storage] Imágenes de fruta precargadas correctamente: ${loadedCount} de ${fruitPool.length}.`);
+    });
 }
 
 // ==================================================================
@@ -380,10 +388,12 @@ async function loadBasketImagesFromStorage() {
 
     console.log(`[Storage] ${basketImageUrls.length} imágenes de cesta encontradas (orden):`, basketImageUrls);
 
-    await Promise.all(basketImageUrls.map(url => preloadImage(url)));
-
-    const loadedCount = basketImageUrls.filter(url => imageCache[url]).length;
-    console.log(`[Storage] Imágenes de cesta precargadas: ${loadedCount} de ${basketImageUrls.length}.`);
+    // No bloquea la carga: se piden todas en paralelo en segundo plano y,
+    // mientras llegan, se usa la cesta dibujada por defecto (ya soportado).
+    Promise.all(basketImageUrls.map(url => preloadImage(url))).then(() => {
+        const loadedCount = basketImageUrls.filter(url => imageCache[url]).length;
+        console.log(`[Storage] Imágenes de cesta precargadas: ${loadedCount} de ${basketImageUrls.length}.`);
+    });
 }
 
 // Nivel máximo posible de la cesta según cuántas imágenes se cargaron.
@@ -438,10 +448,12 @@ async function loadForestImagesFromStorage() {
 
     console.log(`[Storage] ${forestImageUrls.length} imágenes de bosque encontradas (orden):`, forestImageUrls);
 
-    await Promise.all(forestImageUrls.map(url => preloadImage(url)));
-
-    const loadedCount = forestImageUrls.filter(url => imageCache[url]).length;
-    console.log(`[Storage] Imágenes de bosque precargadas: ${loadedCount} de ${forestImageUrls.length}.`);
+    // No bloquea la carga: se piden en paralelo en segundo plano; mientras
+    // llegan, se usa el fondo degradado por defecto del CSS (ya soportado).
+    Promise.all(forestImageUrls.map(url => preloadImage(url))).then(() => {
+        const loadedCount = forestImageUrls.filter(url => imageCache[url]).length;
+        console.log(`[Storage] Imágenes de bosque precargadas: ${loadedCount} de ${forestImageUrls.length}.`);
+    });
 }
 
 // Devuelve la imagen de bosque según las vidas restantes (3 vidas -> primera imagen, 1 vida -> última).
@@ -1042,9 +1054,12 @@ function updateLoadingProgress(done, total) {
     showScreen(loadingScreen);
     updateLoadingProgress(0, 1);
 
-    // Cada tarea de carga (fotos de fruta, productos, cesta, bosque y récord global)
-    // suma su propio "trozo" a la barra de progreso en cuanto termina, en vez de
-    // quedarse fija hasta que todo esté listo.
+    // Estas 5 tareas ya NO esperan a que las imágenes terminen de descargarse:
+    // solo esperan el listado de cada bucket (list(), unos KB de JSON) y la
+    // consulta del récord global, así que la barra llega al 100% casi al
+    // instante. Las imágenes de verdad se descargan todas en paralelo en
+    // segundo plano y van apareciendo solas mientras el jugador ya está en
+    // el menú o jugando (con el respaldo de color mientras tanto).
     const loadingTasks = [
         loadItemPool(),
         loadFruitPool(),
