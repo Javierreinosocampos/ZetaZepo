@@ -206,14 +206,20 @@ let itemPool = [
 
 const imageCache = {};
 
-// Marca de tiempo única por carga de la app: se añade a cada URL para que
-// el navegador y el CDN de Supabase SIEMPRE pidan el archivo de nuevo,
-// nunca una copia guardada en caché de una versión anterior.
-const CACHE_BUST = Date.now();
+// Antes se añadía Date.now() a cada URL, lo que obligaba a descargar TODAS
+// las imágenes de nuevo en cada partida (nunca se podían cachear) y era la
+// causa principal de que la pantalla de carga tardase tanto.
+//
+// Ahora se usa la fecha de modificación real del archivo en Supabase Storage
+// como "versión". Así, si el archivo no ha cambiado, el navegador (y el CDN)
+// reutilizan la copia guardada en caché y la carga es casi instantánea en
+// visitas repetidas; solo se vuelve a descargar cuando de verdad subes una
+// imagen nueva o reemplazas una existente.
+const CACHE_BUST = Date.now(); // usado solo como último recurso si el archivo no trae fecha
 
-function withCacheBust(url) {
+function withCacheBust(url, version) {
     if (!url) return url;
-    return `${url}?v=${CACHE_BUST}`;
+    return `${url}?v=${version || CACHE_BUST}`;
 }
 
 function preloadImage(url) {
@@ -261,7 +267,7 @@ async function loadItemPoolFromStorage() {
             type: 'good',
             color: '#ffcc00',
             points: 10,
-            imageUrl: withCacheBust(urlData.publicUrl)
+            imageUrl: withCacheBust(urlData.publicUrl, file.updated_at)
         };
     });
 
@@ -316,7 +322,7 @@ async function loadFruitPoolFromStorage() {
             type: 'fruit',
             color: '#e21b3c',
             points: -FRUIT_PENALTY_POINTS,
-            imageUrl: withCacheBust(urlData.publicUrl)
+            imageUrl: withCacheBust(urlData.publicUrl, file.updated_at)
         };
     });
 
@@ -369,7 +375,7 @@ async function loadBasketImagesFromStorage() {
             .storage
             .from(BASKET_BUCKET)
             .getPublicUrl(file.name);
-        return withCacheBust(urlData.publicUrl);
+        return withCacheBust(urlData.publicUrl, file.updated_at);
     });
 
     console.log(`[Storage] ${basketImageUrls.length} imágenes de cesta encontradas (orden):`, basketImageUrls);
@@ -427,7 +433,7 @@ async function loadForestImagesFromStorage() {
             .storage
             .from(FOREST_BUCKET)
             .getPublicUrl(file.name);
-        return withCacheBust(urlData.publicUrl);
+        return withCacheBust(urlData.publicUrl, file.updated_at);
     });
 
     console.log(`[Storage] ${forestImageUrls.length} imágenes de bosque encontradas (orden):`, forestImageUrls);
